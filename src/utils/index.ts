@@ -214,16 +214,7 @@ export function isUrl(url: string) {
   return /(^http|https:\/\/)/g.test(url);
 }
 
-/**
- * 封装await
- * @param promise
- */
-export function awaitWrap<T>(promise: Promise<any>): Promise<T[]> {
-  return promise
-    .then((res) => {
-      return [res, null];
-    })
-    .catch((err) => {
-      return [null, err];
-    });
+//封装await
+export function awaitWrap<T, U = Error>(promise: Promise<T>): Promise<[T, null] | [null, U]> {
+  return promise.then<[T, null]>((res: T) => [res, null]).catch<[null, U]>((err) => [null, err]);
 }

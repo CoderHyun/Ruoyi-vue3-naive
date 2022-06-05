@@ -2,10 +2,9 @@ import type { RouteRecordRaw } from 'vue-router';
 import { isNavigationFailure, Router } from 'vue-router';
 import { useUserStoreWidthOut } from '@/store/modules/user';
 import { useAsyncRouteStoreWidthOut } from '@/store/modules/asyncRoute';
-import { ACCESS_TOKEN } from '@/store/mutation-types';
-import { storage } from '@/utils/Storage';
 import { PageEnum } from '@/enums/pageEnum';
 import { ErrorPageRoute } from '@/router/base';
+import { getToken } from '@/utils/auth';
 
 const LOGIN_PATH = PageEnum.BASE_LOGIN;
 
@@ -28,8 +27,7 @@ export function createRouterGuards(router: Router) {
       return;
     }
 
-    const token = storage.get(ACCESS_TOKEN);
-
+    const token = getToken();
     if (!token) {
       // You can access without permissions. You need to set the routing meta.ignoreAuth to true
       if (to.meta.ignoreAuth) {
@@ -50,21 +48,19 @@ export function createRouterGuards(router: Router) {
       next(redirectData);
       return;
     }
-
     if (asyncRouteStore.getIsDynamicAddedRoute) {
       next();
       return;
     }
-
-    const userInfo = await userStore.GetInfo();
-
-    const routes = await asyncRouteStore.generateRoutes(userInfo);
+    // 获取用户基本信息
+    await userStore.GetInfo();
+    const routes = await asyncRouteStore.generateRoutes();
     // 动态添加可访问路由表
     routes.forEach((item) => {
       router.addRoute(item as unknown as RouteRecordRaw);
     });
 
-    //添加404
+    // 添加404
     const isErrorPage = router.getRoutes().findIndex((item) => item.name === ErrorPageRoute.name);
     if (isErrorPage === -1) {
       router.addRoute(ErrorPageRoute as unknown as RouteRecordRaw);

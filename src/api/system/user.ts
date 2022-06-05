@@ -1,17 +1,16 @@
+import { BasicResponseModel } from '@/api';
 import { http } from '@/utils/http/axios';
-
-export interface BasicResponseModel<T = any> {
-  code: number;
-  message: string;
-  result: T;
-}
+import { ILoginForm } from '@/views/login/hook/account-hook';
+import { UserType } from '@/types/system/userType';
 
 /**
  * 获取用户信息返回值type
  */
-export interface ILoginDataType {
-  token: string;
-}
+export type LoginType = {
+  access_token: string;
+  expires_in: number;
+};
+export type ILoginDataType = BasicResponseModel<LoginType>;
 
 export interface BasicPageParams {
   pageNumber: number;
@@ -25,13 +24,19 @@ export interface ICodeDataType extends BasicResponseModel {
   captchaOnOff: boolean;
 }
 
+export interface ILoginReturnType extends BasicResponseModel {
+  permissions: string[];
+  roles: string[];
+  user: UserType;
+}
+
 /**
  * 获取验证码
  */
 export function getCodeImg() {
   return http.request<ICodeDataType>(
     {
-      url: '/captchaImage',
+      url: '/code',
       method: 'GET',
     },
     {
@@ -44,8 +49,8 @@ export function getCodeImg() {
  * @description: 获取用户信息
  */
 export function getUserInfo() {
-  return http.request({
-    url: '/getInfo',
+  return http.request<ILoginReturnType>({
+    url: '/system/user/getInfo',
     method: 'get',
   });
 }
@@ -53,9 +58,9 @@ export function getUserInfo() {
 /**
  * @description: 用户登录
  */
-export function login(params) {
+export function login(params: ILoginForm) {
   return http.request<BasicResponseModel>({
-    url: '/login',
+    url: '/auth/login',
     method: 'POST',
     params,
   });

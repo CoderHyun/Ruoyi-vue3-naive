@@ -6,9 +6,9 @@ Object.keys(allModules).forEach((path) => {
 });
 
 // export default modules
-import asyncRoute from './async-route';
+import asyncRoute from './asyncRoute';
 import user from './user';
-import tabsView from './tabs-view';
+import tabsView from './tabsView';
 import lockscreen from './lockscreen';
 
 export default {

@@ -1,0 +1,28 @@
+export type UserType = {
+  admin: boolean;
+  avatar: string;
+  createBy: string;
+  createTime: string;
+  delFlag: string;
+  dept: any;
+  deptId: null;
+  email: string;
+  loginDate: string;
+  loginIp: string;
+  nickName: string;
+  params: object;
+  password: string;
+  phonenumber: string;
+  postIds: string;
+  remark: string;
+  roleId: string;
+  roleIds: null;
+  roles: object[];
+  searchValue: string;
+  sex: string;
+  status: string;
+  updateBy: string;
+  updateTime: string;
+  userId: number;
+  userName: string;
+};

@@ -59,7 +59,6 @@ export const generatorDynamicRouter = (): Promise<RouteRecordRaw[]> => {
       .then((result) => {
         const routeList = routerGenerator(result);
         asyncImportRoute(routeList);
-
         resolve(routeList);
       })
       .catch((err) => {

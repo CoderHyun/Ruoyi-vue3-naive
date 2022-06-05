@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import { useRoute } from 'vue-router';
-  import { loginFrom, fromRules } from '../../../hook/account-hook';
+  import { loginFrom, fromRules } from '@/views/login/hook/account-hook';
   import {
     PersonCircle,
     LockClosedOutline,
@@ -86,13 +86,14 @@
       // 登录
       userStore
         .login(loginFrom.value)
-        .then((_) => {
+        .then((res) => {
+          if (res?.code !== 200) return;
           const toPath = decodeURIComponent((route.query?.redirect || '/') as string);
           message.success('登录成功，即将进入系统');
           if (route.name === LOGIN_NAME) {
-            router.replace('/');
+            router.push('/');
             pageLoading.value = false;
-          } else router.replace(toPath);
+          } else router.push(toPath);
         })
         .catch((_) => {
           console.error('登录失败');

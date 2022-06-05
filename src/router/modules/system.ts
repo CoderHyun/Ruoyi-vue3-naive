@@ -28,7 +28,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
-        path: 'user-manager',
+        path: 'user/index',
         name: 'system_uer',
         meta: {
           title: '用户管理',

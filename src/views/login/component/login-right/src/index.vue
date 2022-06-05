@@ -1,8 +1,10 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
-  import AccountLogin from '../cpns/login-account.vue';
-  import SwitchLoginMethod from '../cpns/login-switch-method.vue';
+  import AccountLogin from './cpns/login-account.vue';
+  import SwitchLoginMethod from './cpns/login-switch-method.vue';
+
   const activeIndex = ref(1);
+
   function switchActive(e: number) {
     activeIndex.value = e;
   }

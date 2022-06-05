@@ -1,19 +1,21 @@
 import { defineStore } from 'pinia';
 import { createStorage } from '@/utils/Storage';
 import { store } from '@/store';
-import { ACCESS_TOKEN, CURRENT_USER, IS_LOCKSCREEN } from '@/store/mutation-types';
+import { ACCESS_TOKEN, CURRENT_USER } from '@/store/mutation-types';
 
 const Storage = createStorage({ storage: localStorage });
-import { BasicResponseModel, getUserInfo, ILoginDataType, login } from '@/api/system/user';
+import { getUserInfo, ILoginDataType, login } from '@/api/system/user';
 import { storage } from '@/utils/Storage';
 import { awaitWrap } from '@/utils';
 import { ILoginForm } from '@/views/login/hook/account-hook';
+import { setToken, setExpiresIn } from '@/utils/auth';
 
 export interface IUserState {
   token: string;
   username: string;
   welcome: string;
   avatar: string;
+  expires_in: number;
   permissions: any[];
   info: any;
 }
@@ -34,6 +36,7 @@ export const useUserStore = defineStore({
     username: '',
     welcome: '',
     avatar: '',
+    expires_in: 0,
     permissions: [],
     info: Storage.get(CURRENT_USER, {}),
   }),
@@ -61,6 +64,9 @@ export const useUserStore = defineStore({
     setAvatar(avatar: string) {
       this.avatar = avatar;
     },
+    setExpiresIn(expiresIn: number) {
+      this.expires_in = expiresIn;
+    },
     setPermissions(permissions) {
       this.permissions = permissions;
     },
@@ -71,15 +77,13 @@ export const useUserStore = defineStore({
     async login(userInfo: ILoginForm) {
       try {
         userInfo.username = userInfo.username.trim();
-        const [res, err] = await awaitWrap<BasicResponseModel<ILoginDataType>>(login(userInfo));
+        const [res, err] = await awaitWrap<ILoginDataType>(login(userInfo));
         if (!err) {
-          const { result } = res;
-          const ex = 7 * 24 * 60 * 60 * 1000;
-          storage.set(ACCESS_TOKEN, result.token, ex);
-          storage.set(CURRENT_USER, result, ex);
-          storage.set(IS_LOCKSCREEN, false);
-          this.setToken(result.token);
-          this.setUserInfo(result);
+          const { data } = res;
+          setToken(data.access_token);
+          this.setToken(data.access_token);
+          setExpiresIn(data.expires_in);
+          this.setExpiresIn(data.expires_in);
         }
         return Promise.resolve(res);
       } catch (e) {
@@ -89,20 +93,18 @@ export const useUserStore = defineStore({
 
     // 获取用户信息
     GetInfo() {
-      const that = this;
       return new Promise((resolve, reject) => {
         getUserInfo()
           .then((res) => {
-            const result = res;
-            if (result.permissions && result.permissions.length) {
-              const permissionsList = result.permissions;
-              that.setPermissions(permissionsList);
-              that.setUserInfo(result);
+            const { user, permissions } = res;
+            if (permissions && permissions.length) {
+              this.setPermissions(permissions);
+              this.setUserInfo(user);
             } else {
               reject(new Error('getInfo: permissionsList must be a non-null array !'));
             }
-            that.setAvatar(result.avatar);
-            resolve(res);
+            this.setAvatar(user.avatar);
+            resolve(permissions);
           })
           .catch((error) => {
             reject(error);

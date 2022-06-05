@@ -1,4 +1,5 @@
 import { Ref, ref } from 'vue';
+import { FormRules } from 'naive-ui/es/form/src/interface';
 
 export interface ILoginForm {
   username: string;
@@ -16,7 +17,7 @@ export const loginFrom: Ref<ILoginForm> = ref({
   remember: 0,
 });
 
-export const fromRules = ref({
+export const fromRules: Ref<FormRules> = ref({
   username: [
     {
       required: true,

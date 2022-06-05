@@ -15,13 +15,12 @@ import { setObjToUrlParams } from '@/utils/urlUtils';
 
 import { RequestOptions, Result, CreateAxiosOptions } from './types';
 
-import { useUserStoreWidthOut } from '@/store/modules/user';
-
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix || '';
 
 import router from '@/router';
 import { storage } from '@/utils/Storage';
+import { getToken } from '@/utils/auth';
 
 /**
  * @description: 数据处理，方便区分多种处理方式
@@ -46,9 +45,9 @@ const transform: AxiosTransform = {
       return res;
     }
     // 不进行任何处理，直接返回
-    // 用于页面代码可能需要直接获取code，data，message这些信息时开启
+    // 用于页面代码可能需要直接获取data这些信息时开启
     if (!isTransformResponse) {
-      return res.data;
+      return res.data?.data;
     }
     const { data } = res;
 
@@ -124,7 +123,6 @@ const transform: AxiosTransform = {
   // 请求之前处理config
   beforeRequestHook: (config, options) => {
     const { apiUrl, joinPrefix, joinParamsToUrl, formatDate, joinTime = true, urlPrefix } = options;
-
     const isUrlStr = isUrl(config.url as string);
 
     if (!isUrlStr && joinPrefix) {
@@ -173,15 +171,11 @@ const transform: AxiosTransform = {
   /**
    * @description: 请求拦截器处理
    */
-  requestInterceptors: (config, options) => {
+  requestInterceptors: (config) => {
     // 请求之前处理config
-    const userStore = useUserStoreWidthOut();
-    const token = userStore.getToken;
+    const token = getToken();
     if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
-      // jwt token
-      (config as Recordable).headers.Authorization = options.authenticationScheme
-        ? `${options.authenticationScheme} ${token}`
-        : token;
+      config.headers.Authorization = 'Bearer ' + getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     return config;
   },

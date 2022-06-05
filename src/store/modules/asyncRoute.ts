@@ -1,10 +1,9 @@
-import { toRaw, unref } from 'vue';
+import { toRaw } from 'vue';
 import { defineStore } from 'pinia';
 import { RouteRecordRaw } from 'vue-router';
 import { store } from '@/store';
-import { asyncRoutes, constantRouter } from '@/router/index';
-import { generatorDynamicRouter } from '@/router/generator-routers';
-import { useProjectSetting } from '@/hooks/setting/useProjectSetting';
+import { asyncRoutes, constantRouter } from '@/router';
+import { getRouters } from '@/api/system/menu';
 
 interface TreeHelperConfig {
   id: string;
@@ -86,31 +85,39 @@ export const useAsyncRouteStore = defineStore({
       // 设置需要缓存的组件
       this.keepAliveComponents = compNames;
     },
-    async generateRoutes(data) {
+    async generateRoutes() {
+      const { data } = await getRouters();
       let accessedRouters;
-      const permissionsList = data.permissions || [];
+      const permissionsList = data || [];
       const routeFilter = (route) => {
         const { meta } = route;
         const { permissions } = meta || {};
         if (!permissions) return true;
-        return permissionsList.some((item) => permissions.includes(item.value));
+        return permissionsList.some((item) => permissions.includes(!item.hidden));
       };
-      const { getPermissionMode } = useProjectSetting();
-      const permissionMode = unref(getPermissionMode);
-      if (permissionMode === 'BACK') {
-        // 动态获取菜单
-        try {
-          accessedRouters = await generatorDynamicRouter();
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        try {
-          //过滤账户是否拥有某一个权限，并将菜单从加载列表移除
-          accessedRouters = filter(asyncRoutes, routeFilter);
-        } catch (error) {
-          console.log(error);
-        }
+      // TODO: 暂时去除根据setting来设置路由
+      // const { getPermissionMode } = useProjectSetting();
+      // const permissionMode = unref(getPermissionMode);
+      // if (permissionMode === 'BACK') {
+      //   // 动态获取菜单
+      //   try {
+      //     accessedRouters = await generatorDynamicRouter();
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // } else {
+      //   try {
+      //     // 过滤账户是否拥有某一个权限，并将菜单从加载列表移除
+      //     accessedRouters = filter(asyncRoutes, routeFilter);
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // }
+      try {
+        // 过滤账户是否拥有某一个权限，并将菜单从加载列表移除
+        accessedRouters = filter(asyncRoutes, routeFilter);
+      } catch (error) {
+        console.log(error);
       }
       accessedRouters = accessedRouters.filter(routeFilter);
       this.setRouters(accessedRouters);

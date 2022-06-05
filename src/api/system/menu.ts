@@ -15,9 +15,22 @@ export function adminMenus() {
  * @param params
  */
 export function getMenuList(params?) {
-  return http.request({
-    url: '/menu/list',
-    method: 'GET',
-    params,
-  });
+  return http.request(
+    {
+      url: '/system/menu/list',
+      method: 'GET',
+      params,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
 }
+
+// 获取路由
+export const getRouters = () => {
+  return http.request({
+    url: '/system/menu/getRouters',
+    method: 'get',
+  });
+};

@@ -3,6 +3,9 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import { RedirectRoute } from '@/router/base';
 import { PageEnum } from '@/enums/pageEnum';
 import { createRouterGuards } from './router-guards';
+import { Layout } from '@/router/constant';
+import { renderIcon } from '@/utils';
+import { DashboardOutlined } from '@vicons/antd';
 
 const modules = import.meta.globEager('./modules/**/*.ts');
 
@@ -38,11 +41,38 @@ export const LoginRoute: RouteRecordRaw = {
   },
 };
 
+export const Dashboard = [
+  {
+    path: '/index',
+    name: 'Index',
+    redirect: '/index',
+    component: Layout,
+    meta: {
+      title: '主控台',
+      icon: renderIcon(DashboardOutlined),
+      sort: 0,
+    },
+    children: [
+      {
+        path: '',
+        name: `index_console`,
+        meta: {
+          title: '主控台',
+          permissions: ['dashboard_console'],
+          affix: true,
+        },
+        component: () => import('@/views/dashboard/console/console.vue'),
+      },
+    ],
+  },
+];
+
 //需要验证权限
 export const asyncRoutes = [...routeModuleList];
 
 //普通路由 无需验证权限
-export const constantRouter: any[] = [LoginRoute, RootRoute, RedirectRoute];
+// TODO: 这里暂时把首页加入为无需权限
+export const constantRouter: any[] = [LoginRoute, RootRoute, ...Dashboard, RedirectRoute];
 
 const router = createRouter({
   history: createWebHashHistory(''),

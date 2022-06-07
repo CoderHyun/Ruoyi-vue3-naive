@@ -226,7 +226,7 @@ export function awaitWrap<T, U = Error>(promise: Promise<T>): Promise<[T, null] 
  * @param {*} parentId 父节点字段 默认 'parentId'
  * @param {*} children 孩子节点字段 默认 'children'
  */
-export function handleTree(data: any, id: string, parentId? = 'parentId', children? = 'children') {
+export function handleTree(data: any, id: string, parentId?, children?) {
   const config = {
     id: id || 'id',
     parentId: parentId || 'parentId',

@@ -37,7 +37,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/system/user-manager/index.vue'),
       },
       {
-        path: 'menu',
+        path: 'menu/index',
         name: 'system_menu',
         meta: {
           title: '菜单权限管理',

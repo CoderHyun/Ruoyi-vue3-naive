@@ -8,6 +8,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import { configHtmlPlugin } from './html';
 import { configMockPlugin } from './mock';
 import { configCompressPlugin } from './compress';
+import DefineOptions from 'unplugin-vue-define-options/vite';
 
 export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, prodMock) {
   const { VITE_USE_MOCK, VITE_BUILD_COMPRESS, VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE } = viteEnv;
@@ -17,7 +18,7 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, prodMock) 
     vue(),
     // have to
     vueJsx(),
-
+    DefineOptions(),
     // 按需引入NaiveUi且自动创建组件声明
     Components({
       dts: true,

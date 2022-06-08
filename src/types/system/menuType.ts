@@ -45,6 +45,7 @@ export interface MenuType {
   redirect: string;
   component: string;
   alwaysShow: boolean;
+  status: string;
   meta: Meta;
   children: Child[];
 }

@@ -1,3 +1,6 @@
+## 注意！
+该项目还未完善！但是基本的已经搭建！目前还在一步步完善中！
+
 ## 简介
 
 [Ruoyi-Vue3-Admin] (基于 [Vue3.0](https://github.com/vuejs/vue-next)、[Vite](https://github.com/vitejs/vite)、 [Naive UI](https://www.naiveui.com/)、[TypeScript](https://www.typescriptlang.org/) 的中后台解决方案，它使用了最新的前端技术栈，并提炼了典型的业务模型，页面，包括二次封装组件、动态菜单、权限校验、粒子化权限控制等功能.
